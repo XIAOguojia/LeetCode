@@ -20,31 +20,54 @@ import java.util.*;
 public class threeSum {
     public static void main(String[] args) {
         int[] nums = {-1, 0, 1, 2, -1, -4};
-        System.out.println(threeSum(nums));
+        System.out.println(threeSum2(nums));
+    }
+
+    public static List<List<Integer>> threeSum2(int[] nums) {
+        List<List<Integer>> lists = new ArrayList<>();
+        if (nums.length < 3) {
+            return lists;
+        }
+
+        Arrays.sort(nums);
+        for (int i = 0; i < nums.length; i++) {
+            if (i > 0 && nums[i] == nums[i-1]){
+                continue;
+            }
+            if (nums[i] > 0) {
+                break;
+            }
+            int j = i + 1, k = nums.length - 1;
+            int target = -nums[i];
+            while (j < k) {
+                if (nums[j] + nums[k] == target) {
+                    lists.add(Arrays.asList(nums[i], nums[j], nums[k]));
+                    j++;
+                    k--;
+                    while (nums[j] == nums[j - 1] && j < k) {
+                        j++;
+                    }
+                    while (nums[k] == nums[k + 1] && k > j) {
+                        k--;
+                    }
+                } else if (nums[j] + nums[k] > target) {
+                    k--;
+                } else {
+                    j++;
+                }
+            }
+        }
+        return lists;
     }
 
 
+    /***
+     * 时间复杂度为O(N^3）,超时无法通过
+     */
     public static List<List<Integer>> threeSum(int[] nums) {
         List<List<Integer>> lists = new ArrayList<>();
-        List<Integer> tmp = new ArrayList<>();
         Integer[] b = new Integer[3];
-        if (nums.length == 0) {
-            return lists;
-        }
-        if (nums.length == 1) {
-            if (nums[0] == 0) {
-                Integer[] c = {nums[0]};
-                tmp = Arrays.asList(c);
-                lists.add(tmp);
-            }
-            return lists;
-        }
-        if (nums.length == 2) {
-            if (nums[0] + nums[1] == 0) {
-                Integer[] c = {nums[0], nums[1]};
-                tmp = Arrays.asList(c);
-                lists.add(tmp);
-            }
+        if (nums.length < 3) {
             return lists;
         }
 
@@ -53,15 +76,14 @@ public class threeSum {
             for (int i = 0; i < b.length; i++) {
                 b[i] = nums[i];
             }
-            calc(b, tmp, set);
+            calc(b, set);
 
             for (int i = b.length - 1, k = nums.length - 1; i >= 0; i--, k--) {
                 switch (i) {
                     case 2:
                         for (int j = i + 1; j <= k; j++) {
                             b[i] = nums[j];
-                            calc(b, tmp, set);
-
+                            calc(b, set);
                         }
                         break;
 
@@ -70,7 +92,7 @@ public class threeSum {
                             b[i] = nums[j];
                             for (int l = j + 1; l <= k + 1; l++) {
                                 b[i + 1] = nums[l];
-                                calc(b, tmp, set);
+                                calc(b, set);
 
                             }
                         }
@@ -83,7 +105,7 @@ public class threeSum {
                                 b[i + 1] = nums[l];
                                 for (int m = l + 1; m <= k + 2; m++) {
                                     b[i + 2] = nums[m];
-                                    calc(b, tmp, set);
+                                    calc(b, set);
                                 }
                             }
                         }
@@ -98,12 +120,11 @@ public class threeSum {
         return lists;
     }
 
-    private static void calc(Integer[] b, List<Integer> tmp, Set<List<Integer>> set) {
+    private static void calc(Integer[] b, Set<List<Integer>> set) {
         if (calc(b)) {
             Integer[] c = b.clone();
             Arrays.sort(c);
-            tmp = Arrays.asList(c);
-            set.add(tmp);
+            set.add(Arrays.asList(c));
         }
     }
 
